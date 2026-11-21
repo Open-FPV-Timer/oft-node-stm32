@@ -88,6 +88,7 @@ fn hello() -> Message {
 async fn rx_task(mut rx: BufferedUartRx<'static>, tx: &'static Tx) {
     let mut dec = FrameDecoder::new();
     let mut buf = [0u8; 64];
+    let mut last_ping_t = 0u64;
     loop {
         let n = match rx.read(&mut buf).await {
             Ok(n) => n,
@@ -98,6 +99,12 @@ async fn rx_task(mut rx: BufferedUartRx<'static>, tx: &'static Tx) {
             match m {
                 Message::Ping(p) => {
                     QUIET_S.store(0, Ordering::Relaxed);
+                    // The Timer's clock went backwards: it restarted, and has not seen
+                    // our Hello. Send it again (housekeeping does, until a plan comes).
+                    if p.t_timer < last_ping_t {
+                        GOT_PLAN.store(false, Ordering::Relaxed);
+                    }
+                    last_ping_t = p.t_timer;
                     send(tx, &Message::Pong(Pong { id: p.id, t_timer: p.t_timer, t_node: now_us() })).await;
                 }
                 Message::Plan(p) => {

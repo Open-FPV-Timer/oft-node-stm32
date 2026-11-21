@@ -3,8 +3,10 @@
 Turns the STM32 on a RotorHazard timer board into an [OFT](../oft-spec/oft-spec.md) Node.
 The board's Raspberry Pi then runs `oftd` (from [oft](../oft)) and the box is an OFT Timer.
 
-**Status: builds, not yet run on hardware.** First target: a NuclearHazard Fission with
-four RX5808s on a Pi 5.
+**Status: first light.** On a NuclearHazard Fission (STM32F103, four RX5808s, Pi 5) it
+finds the four receivers and streams all of them at 1 kHz to `oftd` on the Pi, and the
+levels follow the tuned frequency. Not yet tested with a VTX or flown; the level scale is
+provisional (see Levels).
 
 - One STM32F103 drives up to eight RX5808 receivers. Each receiver is one seat: it stays on
   its frequency and is sampled at 1 kHz. Nothing hops.
@@ -60,6 +62,14 @@ Flash the backup, or RotorHazard's own image, then start RotorHazard again:
 ./nodeflash.py flash stock.bin
 # or: cd ~/RotorHazard/src/server && python server.py --flashbpill
 sudo systemctl start rotorhazard
+```
+
+## Run the Timer on the Pi
+
+Build `oftd` for the Pi with `oft/cross/build-pi.sh` (Docker), copy it over, and:
+
+```sh
+./oftd --serial /dev/ttyAMA0      # serves http://<pi>:7270/
 ```
 
 ## Levels
