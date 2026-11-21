@@ -72,6 +72,9 @@ Build `oftd` for the Pi with `oft/cross/build-pi.sh` (Docker), copy it over, and
 ./oftd --serial /dev/ttyAMA0      # serves http://<pi>:7270/
 ```
 
+To have it start at every boot, run `oft/dist/install-service.sh` on the Pi instead, and
+stop RotorHazard from starting: `sudo systemctl disable --now rotorhazard`.
+
 ## Levels
 
 An RX5808 reports signal strength as a voltage. `board::raw_to_ddb` turns it into 0.1 dB
