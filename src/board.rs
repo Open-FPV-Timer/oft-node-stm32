@@ -18,7 +18,9 @@ use embassy_stm32::rcc::{ADCPrescaler, AHBPrescaler, APBPrescaler, Hse, HseMode,
 use embassy_stm32::time::Hertz;
 use embassy_stm32::Config;
 
-pub const FW_VERSION: [u8; 3] = [0, 1, 0];
+pub const FW_VERSION: [u8; 3] = [0, 1, 1];
+/// How this Node names itself to the Timer (the `chip` of a node in `/info`).
+pub const CHIP: &str = "stm32f1-rx5808";
 
 /// Receiver slots on the board.
 pub const SLOTS: usize = 8;

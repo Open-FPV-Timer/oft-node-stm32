@@ -25,7 +25,7 @@ use embassy_sync::mutex::Mutex;
 use embassy_sync::signal::Signal;
 use embassy_time::{Duration, Instant, Ticker, Timer};
 use embedded_io_async::{Read, Write};
-use oft_nodelink::msg::{Features, Hello, Message, Plan, Pong, SampleFlags, Samples, Status, GAIN_AUTO};
+use oft_nodelink::msg::{ChipName, Features, Hello, Message, Plan, Pong, SampleFlags, Samples, Status, GAIN_AUTO};
 use oft_nodelink::{encode_frame, FrameDecoder, LINK_VERSION, MAX_FRAME};
 use panic_halt as _;
 use core::sync::atomic::{AtomicBool, AtomicU16, AtomicU32, Ordering};
@@ -80,6 +80,7 @@ fn hello() -> Message {
         freq_max_mhz: rx5808::FREQ_MAX_MHZ,
         max_seats: RECEIVERS.load(Ordering::Relaxed) as u8,
         features: Features::empty(),
+        chip: ChipName::new(board::CHIP),
     })
 }
 
