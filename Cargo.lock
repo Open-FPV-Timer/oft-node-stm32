@@ -659,7 +659,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "oft-node-rx5808"
+name = "oft-node-stm32"
 version = "0.1.0"
 dependencies = [
  "cortex-m",

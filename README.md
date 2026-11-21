@@ -1,4 +1,4 @@
-# oft-node-rx5808: OFT Node firmware for RotorHazard-style STM32 timers
+# oft-node-stm32: OFT Node firmware for RotorHazard-style STM32 timers
 
 Turns the STM32 on a RotorHazard timer board into an [OFT](../oft-spec/oft-spec.md) Node.
 The board's Raspberry Pi then runs `oftd` (from [oft](../oft)) and the box is an OFT Timer.
@@ -36,7 +36,7 @@ rustup target add thumbv7m-none-eabi
 rustup component add llvm-tools
 cargo build --release
 "$(find ~/.rustup/toolchains -name llvm-objcopy | head -1)" -O binary \
-    target/thumbv7m-none-eabi/release/oft-node-rx5808 oft-node-rx5808.bin
+    target/thumbv7m-none-eabi/release/oft-node-stm32 oft-node-stm32.bin
 ```
 
 ## Flash, from the board's Pi
@@ -48,7 +48,7 @@ cargo build --release
 sudo systemctl stop rotorhazard
 ./nodeflash.py info                       # chip id and flash size; changes nothing
 ./nodeflash.py backup stock.bin           # keep what is on the chip now
-./nodeflash.py flash oft-node-rx5808.bin  # erase, write, verify, restart
+./nodeflash.py flash oft-node-stm32.bin  # erase, write, verify, restart
 ```
 
 It talks to the STM32's ROM bootloader over the UART, with GPIO17 on reset and GPIO27 on

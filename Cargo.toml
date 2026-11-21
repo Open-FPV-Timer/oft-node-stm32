@@ -1,5 +1,5 @@
 [package]
-name = "oft-node-rx5808"
+name = "oft-node-stm32"
 version = "0.1.0"
 edition = "2021"
 license = "GPL-3.0-or-later"
@@ -7,7 +7,7 @@ description = "OFT Node firmware for RotorHazard-style STM32 timers (S32_BPill p
 publish = false
 
 [[bin]]
-name = "oft-node-rx5808"
+name = "oft-node-stm32"
 test = false
 bench = false
 
