@@ -5,8 +5,8 @@ The board's Raspberry Pi then runs `oftd` (from [oft](../oft)) and the box is an
 
 **Status: first light.** On a NuclearHazard Fission (STM32F103, four RX5808s, Pi 5) it
 finds the four receivers and streams all of them at 1 kHz to `oftd` on the Pi, and the
-levels follow the tuned frequency. Not yet tested with a VTX or flown; the level scale is
-provisional (see Levels).
+levels follow the tuned frequency. Flown beside a C5 Node on a 2 ft whoop gate (2026-11-21,
+25 mW): 25 of 26 passes with no false crossings at a manual 850 mV threshold (see Levels).
 
 - One STM32F103 drives up to eight RX5808 receivers. Each receiver is one seat: it stays on
   its frequency and is sampled at 1 kHz. Nothing hops.
@@ -77,10 +77,26 @@ stop RotorHazard from starting: `sudo systemctl disable --now rotorhazard`.
 
 ## Levels
 
-An RX5808 reports signal strength as a voltage. `board::raw_to_ddb` turns it into 0.1 dB
-steps with a slope of 15 mV per dB. That slope is provisional (one informal measurement);
-it is to be set from passes recorded beside a C5 Node. Levels are relative: thresholds
-compare against the noise floor, so a receiver's offset does not matter, but its slope does.
+An RX5808 reports signal strength as a voltage on its RSSI pin, and that is what this Node
+reports: **millivolts**, one per count (`board::raw_to_mv`, `Features::LEVEL_MV`). The Timer
+passes the unit on (`"level":{"unit":"mV","scale":1}` in `/info`) and its page shows mV.
+
+It is not converted to dB because the output is not a straight line in dB. Measured beside
+a C5 Node (whoop at 25 mW, 2 ft gate, this Node on the floor under it):
+
+| | RSSI |
+|---|---|
+| Nothing transmitting | about 380 mV |
+| VTX powered in the same room | about 700 mV (the C5 barely hears it yet) |
+| Return flights past the outside of the gate | 710 to 870 mV |
+| Passes through the gate | 846 to 912 mV, flattening near the top |
+
+So the RX5808 is far more sensitive than the C5 and spends a close-range race in the top,
+compressed part of its range. Use `manual` thresholds, as with RotorHazard's EnterAt and
+ExitAt: enter 850 mV and exit 810 mV worked here. The `auto` mode works too, but its
+numbers are then millivolts above the floor, and its defaults are tuned for dB Nodes.
+RotorHazard shows the same voltage as a 0 to 255 count (about 6.5 mV per count on this
+board), so an RH level is roughly millivolts divided by 6.5.
 
 ## Not done yet
 

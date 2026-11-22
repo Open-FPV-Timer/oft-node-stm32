@@ -79,7 +79,7 @@ fn hello() -> Message {
         freq_min_mhz: rx5808::FREQ_MIN_MHZ,
         freq_max_mhz: rx5808::FREQ_MAX_MHZ,
         max_seats: RECEIVERS.load(Ordering::Relaxed) as u8,
-        features: Features::empty(),
+        features: Features::LEVEL_MV,
         chip: ChipName::new(board::CHIP),
     })
 }
@@ -245,7 +245,7 @@ async fn sample_task(
                 if raw >= board::CLIP_RAW {
                     s.flags = SampleFlags(s.flags.0 | SampleFlags::CLIPPED.0);
                 }
-                s.batch[s.n as usize] = board::raw_to_ddb(raw);
+                s.batch[s.n as usize] = board::raw_to_mv(raw);
                 s.n += 1;
             }
             for s in seats.iter_mut().flatten() {

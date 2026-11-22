@@ -18,7 +18,7 @@ use embassy_stm32::rcc::{ADCPrescaler, AHBPrescaler, APBPrescaler, Hse, HseMode,
 use embassy_stm32::time::Hertz;
 use embassy_stm32::Config;
 
-pub const FW_VERSION: [u8; 3] = [0, 1, 1];
+pub const FW_VERSION: [u8; 3] = [0, 2, 0];
 /// How this Node names itself to the Timer (the `chip` of a node in `/info`).
 pub const CHIP: &str = "stm32f1-rx5808";
 
@@ -47,15 +47,16 @@ pub const CLIP_RAW: u16 = 4000;
 /// "No noise floor estimate" in `Samples`: the Timer tracks the floor itself.
 pub const NO_FLOOR: i16 = i16::MIN;
 
-/// RX5808 RSSI slope, mV per dB. PROVISIONAL: about 15 mV/dB by one informal measurement;
-/// to be set from passes recorded beside a C5 Node.
-pub const MV_PER_DB: i32 = 15;
-
-/// A 12-bit reading (3.3 V full scale) as a level in 0.1 dB. Relative, not calibrated: zero
-/// is 0 V, not a known power.
-pub fn raw_to_ddb(raw: u16) -> i16 {
-    let mv = raw as i32 * 3300 / 4095;
-    (mv * 10 / MV_PER_DB) as i16
+/// A 12-bit reading (3.3 V full scale) as the level this Node reports: millivolts on the
+/// RX5808's RSSI pin (`Features::LEVEL_MV`).
+///
+/// Not dB, on purpose. The RSSI output is not a straight line in dB: measured beside a C5
+/// Node (2026-11-21, whoop at 25 mW on a 2 ft gate) it rose from about 380 mV with nothing
+/// transmitting to about 730 mV before the C5 heard anything, then flattened towards 910 mV
+/// through a pass. No one slope turns that into honest dB, so the Timer and its clients
+/// show the voltage and say so.
+pub fn raw_to_mv(raw: u16) -> i16 {
+    (raw as i32 * 3300 / 4095) as i16
 }
 
 /// 72 MHz from the board's 8 MHz resonator (the stock firmware runs the same way), the ADC
